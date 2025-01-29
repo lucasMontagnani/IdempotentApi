@@ -1,5 +1,6 @@
 ﻿using IdempotentApi.Application.Services;
 using IdempotentApi.Data.Repositories;
+using IdempotentApi.Filters;
 using IdempotentApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace IdempotentApi.Controllers
         //    _productRepository = productRepository;
         //}
 
-        [HttpGet("GetProductsByIdAsync")]
+        [HttpGet("GetProductsById")]
         public async Task<IActionResult> GetProductsByIdAsync([FromQuery] int id) 
         {
             Product? product = await _productRepository.GetProductsByIdAsync(id);
@@ -29,21 +30,21 @@ namespace IdempotentApi.Controllers
                 return BadRequest("Product not found!");
         }
 
-        [HttpGet("GetProductsAsync")]
+        [HttpGet("GetProducts")]
         public async Task<IActionResult> GetProductsAsync()
         {
             IEnumerable<Product> products = await _productRepository.GetProductsAsync();
             return Ok(products);
         }
 
-        [HttpPost("CreateProductAsync")]
+        [HttpPost("CreateProduct")]
         public async Task<IActionResult> CreateProductAsync([FromBody] Product product)
         {
             Product newProduct = await _productRepository.CreateProductAsync(product);
             return Created();
         }
 
-        [HttpPost("CreateProductAsyncIdempotent")]
+        [HttpPost("CreateProductIdempotentWithServiceInjection")]
         public async Task<IActionResult> CreateProductAsyncIdempotent([FromHeader(Name = "Idempotency-Key")] 
                                                                             string? idempotencyKey, 
                                                                       [FromBody] Product product)
@@ -55,9 +56,18 @@ namespace IdempotentApi.Controllers
 
             Product newProduct = await _productRepository.CreateProductAsync(product);
 
-            // Return 201 Created with the newly created product
             return CreatedAtAction(nameof(CreateProductAsyncIdempotent), new { id = newProduct.Id }, newProduct);
         }
 
+        [HttpPost("CreateProductIdempotentWithFilter")]
+        [ServiceFilter(typeof(IdempotencyFilter))]
+        public async Task<IActionResult> CreateProductAsyncIdempotentWithFilter([FromHeader(Name = "Idempotency-Key")]
+                                                                                        string? idempotencyKey, 
+                                                                                [FromBody] Product product)
+        {
+            Product newProduct = await _productRepository.CreateProductAsync(product);
+
+            return CreatedAtAction(nameof(CreateProductAsyncIdempotent), new { id = newProduct.Id }, newProduct);
+        }
     }
 }

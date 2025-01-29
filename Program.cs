@@ -1,6 +1,7 @@
 using IdempotentApi.Application.Services;
 using IdempotentApi.Data;
 using IdempotentApi.Data.Repositories;
+using IdempotentApi.Filters;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddMemoryCache(); // Use a distributed cache like Redis for production
+// Register Interfaces Dependency Injection
 builder.Services.AddScoped<IIdempotencyService, IdempotencyService>();
+// Register Idempotency Filter
+builder.Services.AddScoped<IdempotencyFilter>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
