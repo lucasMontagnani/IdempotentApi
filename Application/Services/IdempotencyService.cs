@@ -13,22 +13,6 @@ namespace IdempotentApi.Application.Services
             _memoryCache = memoryCache;
         }
 
-        public bool ValidateIdempotencyKey(Guid idempotencyKey)
-        {
-            // Verify if the IdempotencyKey is already in the cache
-            if (!_memoryCache.TryGetValue(idempotencyKey, out var result)) 
-            {
-                // Guardar a chave no cache
-                //var cacheEntryOptions = new MemoryCacheEntryOptions()
-                //        .SetAbsoluteExpiration(TimeSpan.FromHours(10))
-                //        .SetPriority(CacheItemPriority.Normal);
-                //_memoryCache.Set(idempotencyKey, _, cacheEntryOptions);
-
-                return true;
-            }
-            return false;
-        }
-
         public ActionResult IdempotencyValidator(string? idempotencyString)
         {
             if (string.IsNullOrEmpty(idempotencyString))
