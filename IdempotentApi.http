@@ -1,0 +1,6 @@
+@IdempotentApi_HostAddress = http://localhost:5195
+
+GET {{IdempotentApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
