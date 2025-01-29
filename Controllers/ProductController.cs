@@ -55,7 +55,8 @@ namespace IdempotentApi.Controllers
 
             Product newProduct = await _productRepository.CreateProductAsync(product);
 
-            return result;
+            // Return 201 Created with the newly created product
+            return CreatedAtAction(nameof(CreateProductAsyncIdempotent), new { id = newProduct.Id }, newProduct);
         }
 
     }
