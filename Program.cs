@@ -2,6 +2,7 @@ using IdempotentApi.Application.Services;
 using IdempotentApi.Data;
 using IdempotentApi.Data.Repositories;
 using IdempotentApi.Filters;
+using IdempotentApi.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// Register Idempotency Middleware
+//app.UseMiddleware<IdempotencyMiddleware>();
 
 app.MapControllers();
 

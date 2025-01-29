@@ -41,7 +41,7 @@ namespace IdempotentApi.Controllers
         public async Task<IActionResult> CreateProductAsync([FromBody] Product product)
         {
             Product newProduct = await _productRepository.CreateProductAsync(product);
-            return Created();
+            return CreatedAtAction(nameof(CreateProductAsyncIdempotent), new { id = newProduct.Id }, newProduct);
         }
 
         [HttpPost("CreateProductIdempotentWithServiceInjection")]
@@ -55,7 +55,6 @@ namespace IdempotentApi.Controllers
                 return result;
 
             Product newProduct = await _productRepository.CreateProductAsync(product);
-
             return CreatedAtAction(nameof(CreateProductAsyncIdempotent), new { id = newProduct.Id }, newProduct);
         }
 
@@ -66,7 +65,16 @@ namespace IdempotentApi.Controllers
                                                                                 [FromBody] Product product)
         {
             Product newProduct = await _productRepository.CreateProductAsync(product);
+            return CreatedAtAction(nameof(CreateProductAsyncIdempotent), new { id = newProduct.Id }, newProduct);
+        }
 
+        // Currently diabled in the Program.cs
+        [HttpPost("CreateProductIdempotentWithMiddleware")]
+        public async Task<IActionResult> CreateProductIdempotentWithMiddleware([FromHeader(Name = "Idempotency-Key")]
+                                                                                        string? idempotencyKey,
+                                                                                [FromBody] Product product)
+        {
+            Product newProduct = await _productRepository.CreateProductAsync(product);
             return CreatedAtAction(nameof(CreateProductAsyncIdempotent), new { id = newProduct.Id }, newProduct);
         }
     }
